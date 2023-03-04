@@ -13,19 +13,21 @@ const preset = presets.node({
   fetch
 });
 
-(async (output, input) => {
+(async (output, input, height, width) => {
   const svg = await fs.readFile(input, 'utf8')
-  const canvas = preset.createCanvas(100, 100)
+  const canvas = preset.createCanvas(width, height)
   const ctx = canvas.getContext('2d')
   const v = Canvg.fromString(ctx, svg, preset)
 
   // Render only first frame, ignoring animations.
-  await v.render({scaleHeight:100,scaleWidth:100,offsetX:0,offsetY:0})
+  await v.resize(width, height)
+  await v.render()
 
   const png = canvas.toBuffer()
 
   await fs.writeFile(output, png)
 })(
-  './example.png',
-  './example.svg'
+  './example.256.png',
+  './example.svg',
+  256, 256
 )
